@@ -1,0 +1,38 @@
+{
+  "authors": [
+    "brandenlegal"
+  ],
+  "breaks": {},
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modrinth": "https://modrinth.com/user/brandenlegal"
+      }
+    }
+  },
+  "depends": {
+    "fabric-api": "*",
+    "fabricloader": ">=0.16.0",
+    "java": ">=21",
+    "minecraft": "~1.21.1",
+    "owo": ">=0.12.0"
+  },
+  "description": "RPG skill trees: Mining, Combat, Farming, Survival, Arcane. Level what you do.",
+  "entrypoints": {
+    "client": [
+      "com.branden.limitskills.client.LimitlessSkillsClient"
+    ],
+    "main": [
+      "com.branden.limitskills.LimitlessSkills"
+    ]
+  },
+  "environment": "*",
+  "id": "limitskills",
+  "license": "All Rights Reserved",
+  "name": "Limitless Skills",
+  "schemaVersion": 1,
+  "version": "1.0.0",
+  "suggests": {
+    "yet_another_config_lib_v3": "*"
+  }
+}
