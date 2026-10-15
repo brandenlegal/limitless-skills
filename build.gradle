@@ -8,6 +8,13 @@ group = "com.branden.limitskills"
 
 repositories {
 	mavenCentral()
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 loom {
@@ -27,11 +34,11 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:0.19.5"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:0.160.5+26.3"
 
-	// owo-lib 26.3 port (Branden's trusted source)
-	modImplementation files("libs/owo-lib-0.13.1_26.3.jar")
+	// ui-lib (current UI, proven in Enchants v2.5.3)
+	modImplementation "maven.modrinth:uilib:22.1.0+26.3"
 
-	// ui-lib (fallback, proven in Enchants)
-	// modImplementation "com.daqem:uilib-fabric:22.1.0+26.3"
+	// Note: owo-lib will be added when migrating UI from ui-lib
+	// owo-lib 0.13.1+26.3: https://github.com/roggy666/owo-lib-26.3/releases/tag/Fabric-26.3
 }
 
 processResources {
