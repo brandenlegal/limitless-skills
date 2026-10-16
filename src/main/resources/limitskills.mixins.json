@@ -1,1 +1,1 @@
-{"compatibilityLevel":"JAVA_25","injectors":{"defaultRequire":1},"minVersion":"0.8","mixins":["ServerPlayerSkillDataMixin"],"package":"com.branden.limitskills.mixin","required":true}
+{"compatibilityLevel":"JAVA_25","injectors":{"defaultRequire":1},"minVersion":"0.8","mixins":["ServerPlayerSkillDataMixin","BlockItemPlacementMixin"],"package":"com.branden.limitskills.mixin","required":true}
