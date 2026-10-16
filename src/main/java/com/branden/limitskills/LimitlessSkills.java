@@ -3,13 +3,11 @@ package com.branden.limitskills;
 import com.branden.limitskills.net.SkillNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,10 +54,16 @@ public class LimitlessSkills implements ModInitializer {
 			SkillNetworking.syncToClient(handler.getPlayer())
 		);
 
-		// Combat XP (mob kills)
-		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-			// XP awarded on kill via LivingDeathEvent (handled via mixin or Fabric API)
-			return InteractionResult.PASS;
+		// Award XP only after the server confirms a kill or nonfatal damage.
+		ServerLivingEntityEvents.AFTER_DEATH.register((victim, source) -> {
+			if (source.getEntity() instanceof ServerPlayer killer && victim != killer) {
+				XpHooks.onMobKill(killer, victim);
+			}
+		});
+		ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
+			if (entity instanceof ServerPlayer player && !blocked && damageTaken > 0) {
+				XpHooks.onDamageTaken(player, damageTaken);
+			}
 		});
 
 		// Player disconnect cleanup
