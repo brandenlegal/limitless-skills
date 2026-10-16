@@ -2,6 +2,7 @@ package com.branden.limitskills.client;
 
 import com.branden.limitskills.net.OpenScreenPayload;
 import com.branden.limitskills.net.SkillSyncPayload;
+import com.branden.limitskills.SkillApi;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -23,6 +24,7 @@ public class LimitlessSkillsClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		SkillApi.setClientDataAccess(ClientSkillCache::getLevel, ClientSkillCache::getXp);
 		// Register G key to open skills screen
 		openSkillsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 			"key.limitskills.open_skills",

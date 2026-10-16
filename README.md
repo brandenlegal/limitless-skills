@@ -1,37 +1,33 @@
 # Limitless Skills
 
-A premium RPG progression mod for Minecraft — five skill disciplines with XP tracking, persistent player data, and a polished skill-tree interface.
+A Fabric RPG progression mod for Minecraft 26.3 with five defined disciplines and a v2.0 skill screen. Gameplay and persistence are still being verified.
 
 Part of the [Limitless Labs](https://github.com/brandenlegal) ecosystem.
 
 ## Current Version
 
-**v2.0.1** — Minecraft 26.3, Fabric Loader 0.19.5+
+Latest previously shipped build: **v2.0.1**. Current development build: **2.0.2-dev.1** on `codex/phase-0-build` (not a release).
 
 ## Features
 
 ### Five Skill Disciplines
-- **⛏ Mining** — Ores, stone, deepslate
-- **⚔ Combat** — Mob kills, boss kills
-- **🌾 Farming** — Crops, animal breeding
-- **❤ Survival** — Damage taken, fishing
-- **✦ Arcane** — Enchanting, brewing
+Mining, Combat, Farming, Survival, and Arcane are defined and displayed. The current event wiring awards Mining XP for blocks, Farming XP for mature crops, and Survival XP for logs. The other XP source methods are not yet connected to game events.
 
 ### Progression
 - Exponential XP curve (`100 × 1.35^level`)
 - Level-up notifications with sound
-- Per-discipline perks (mining speed, double drops, damage bonuses, etc.)
-- Anti-cheat: placed blocks give no XP, rate limiting
+- Per-discipline perk formulas are displayed in the UI; gameplay effects are not yet connected.
+- Block-break XP is rate limited. Placed-block tracking is not yet connected to a placement event.
 
 ### Persistence
 - Skill data saves to player NBT via Mixin
-- Survives server restarts and disconnects
+- Player NBT save/load Mixin is present; persistence across a full restart still needs an in-game test.
 - Server-authoritative with client sync
 
 ### Interface (v2.0)
 - Dark charcoal theme with gold accents
 - Visual skill-tree canvas with connected nodes
-- Node states: Locked (§8) / Available (§6) / Unlocked (§a)
+- Node states currently reflect level thresholds only; there is no purchase system yet.
 - Details panel: level, progress bar, perks, next unlock
 - Discipline tabs for switching trees
 
@@ -98,19 +94,19 @@ See `LIMITLESS_LABS_ECOSYSTEM_STANDARD.md` for integration conventions.
 
 ### Building
 
-This project uses manual `javac` builds (Gradle daemon is blocked in the build environment).
-A Fabric Loom scaffold is available on the `loom-pipeline-experiment` branch.
+Use the checked-in Gradle wrapper and Java 25. See [docs/BUILD.md](docs/BUILD.md) for pinned dependencies, commands, and validation status.
 
 ## Branches
 
 - `main` — Stable releases
-- `v2.0-redesign` — v2.0 UI + persistence + commands (current development)
+- `v2.0-redesign` — v2.0 UI + persistence + commands (source baseline)
+- `codex/phase-0-build` — reproducible Loom build work
 - `v1.1.0-persistence-ui` — Persistence milestone
 - `loom-pipeline-experiment` — Fabric Loom build scaffold
 
 ## License
 
-MIT — see LICENSE file.
+The mod metadata declares MIT. A LICENSE file is not yet checked in.
 
 ## Author
 

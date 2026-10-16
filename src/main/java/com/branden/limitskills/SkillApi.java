@@ -2,6 +2,8 @@ package com.branden.limitskills;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
 
 /**
  * Public API for other mods (like Limitless Enchants) to interact with Limitless Skills.
@@ -9,6 +11,14 @@ import net.minecraft.world.entity.player.Player;
  */
 public final class SkillApi {
 	private SkillApi() {}
+	private static volatile ToIntFunction<SkillType> clientLevel = type -> 0;
+	private static volatile ToDoubleFunction<SkillType> clientXp = type -> 0.0;
+
+	/** Client entrypoint bridge; common code must not link client-only classes. */
+	public static void setClientDataAccess(ToIntFunction<SkillType> level, ToDoubleFunction<SkillType> xp) {
+		clientLevel = level;
+		clientXp = xp;
+	}
 
 	/**
 	 * Get a player's skill level. Safe to call from any mod.
@@ -19,7 +29,7 @@ public final class SkillApi {
 			return SkillManager.get(sp).getLevel(type);
 		}
 		// Client side - use cache
-		return com.branden.limitskills.client.ClientSkillCache.getLevel(type);
+		return clientLevel.applyAsInt(type);
 	}
 
 	/**
@@ -29,7 +39,7 @@ public final class SkillApi {
 		if (player instanceof ServerPlayer sp) {
 			return SkillManager.get(sp).getXp(type);
 		}
-		return com.branden.limitskills.client.ClientSkillCache.getXp(type);
+		return clientXp.applyAsDouble(type);
 	}
 
 	/**
