@@ -51,8 +51,9 @@ public final class SkillStore {
 	}
 
 	public static void onPlayerDisconnect(UUID uuid) {
-		// Data is kept in cache; in production this would write to disk
-		// For now, keep in memory (survives until server stop)
+		// Vanilla saves the player before the disconnect event. Do not let this
+		// session's data leak into a later login or another world.
+		clear(uuid);
 	}
 
 	public static void clear(UUID uuid) {

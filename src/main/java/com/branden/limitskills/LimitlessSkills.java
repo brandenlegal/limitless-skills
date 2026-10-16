@@ -51,6 +51,11 @@ public class LimitlessSkills implements ModInitializer {
 			}
 		});
 
+		// Send persisted skills as soon as the play connection can receive packets.
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
+			SkillNetworking.syncToClient(handler.getPlayer())
+		);
+
 		// Combat XP (mob kills)
 		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
 			// XP awarded on kill via LivingDeathEvent (handled via mixin or Fabric API)

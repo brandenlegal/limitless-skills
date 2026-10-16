@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 
@@ -40,15 +41,11 @@ public class LimitlessSkillsClient implements ClientModInitializer {
 			}
 		});
 
-		// Register /skills client command
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientSkillCache.clear());
+
+		// The server owns /skills and sends the open-screen packet. Keep only the
+		// local prototype command here so /skills reaches the server.
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-			dispatcher.register(
-				com.mojang.brigadier.builder.LiteralArgumentBuilder.<FabricClientCommandSource>literal("skills")
-					.executes(context -> {
-						openSkillScreen();
-						return 1;
-					})
-			);
 			// /skilltree <type> opens the prototype
 			dispatcher.register(
 				com.mojang.brigadier.builder.LiteralArgumentBuilder.<FabricClientCommandSource>literal("skilltree")
