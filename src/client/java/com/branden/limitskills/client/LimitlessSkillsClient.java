@@ -22,6 +22,8 @@ import net.minecraft.client.Minecraft;
 public class LimitlessSkillsClient implements ClientModInitializer {
 
 	public static KeyMapping openSkillsKey;
+	private static com.branden.limitskills.SkillType pendingPrototype;
+	private static int pendingPrototypeTicks;
 
 	@Override
 	public void onInitializeClient() {
@@ -39,9 +41,19 @@ public class LimitlessSkillsClient implements ClientModInitializer {
 			while (openSkillsKey.consumeClick()) {
 				openSkillScreen();
 			}
+			// Brigadier runs while chat is still closing. Open the prototype on the
+			// next client tick so chat cannot replace the new screen.
+			if (pendingPrototype != null && --pendingPrototypeTicks <= 0) {
+				var type = pendingPrototype;
+				pendingPrototype = null;
+				openSkillTreePrototype(type);
+			}
 		});
 
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientSkillCache.clear());
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			ClientSkillCache.clear();
+			pendingPrototype = null;
+		});
 
 		// The server owns /skills and sends the open-screen packet. Keep only the
 		// local prototype command here so /skills reaches the server.
@@ -54,7 +66,8 @@ public class LimitlessSkillsClient implements ClientModInitializer {
 							String typeName = com.mojang.brigadier.arguments.StringArgumentType.getString(context, "type");
 							try {
 								com.branden.limitskills.SkillType type = com.branden.limitskills.SkillType.valueOf(typeName.toUpperCase());
-								openSkillTreePrototype(type);
+								pendingPrototype = type;
+								pendingPrototypeTicks = 2;
 							} catch (IllegalArgumentException e) {
 								context.getSource().sendFeedback(net.minecraft.network.chat.Component.literal("Unknown skill type: " + typeName));
 							}
