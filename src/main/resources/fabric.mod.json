@@ -1,0 +1,40 @@
+{
+  "authors": [
+    "brandenlegal"
+  ],
+  "custom": {
+    "limitlesslabs": {
+      "api": "com.branden.limitskills.api.SkillApi",
+      "apiVersion": "1.0.0"
+    }
+  },
+  "depends": {
+    "fabric-api": ">=0.155.2",
+    "fabricloader": ">=0.19.5",
+    "java": ">=25",
+    "minecraft": "26.3"
+  },
+  "description": "RPG progression mod with 5 skill disciplines. Part of the Limitless Labs ecosystem.",
+  "entrypoints": {
+    "client": [
+      "com.branden.limitskills.client.LimitlessSkillsClient"
+    ],
+    "main": [
+      "com.branden.limitskills.LimitlessSkills"
+    ]
+  },
+  "environment": "*",
+  "id": "limitskills",
+  "license": "MIT",
+  "name": "Limitless Skills",
+  "schemaVersion": 1,
+  "suggests": {
+    "limitlessenchants": ">=2.5.3",
+    "modmenu": ">=1.0.0",
+    "yacl": ">=3.9.7"
+  },
+  "version": "1.0.0",
+  "mixins": [
+    "limitskills.mixins.json"
+  ]
+}
