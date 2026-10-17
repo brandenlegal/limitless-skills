@@ -39,4 +39,22 @@ class SkillProgressionTest {
 			SkillStore.clear(second);
 		}
 	}
+
+	@Test
+	void passivePerkFormulasKeepTheirDocumentedCapsAndSteps() {
+		assertEquals(0.25, Perks.doubleDropChance(25));
+		assertEquals(0.25, Perks.doubleDropChance(100));
+		assertEquals(0.20, Perks.critChanceBonus(25));
+		assertEquals(3, Perks.bonusCropYield(30));
+		assertEquals(0.30, Perks.damageReduction(100));
+		assertEquals(24, Perks.bonusHealth(96));
+		assertEquals(0.50, Perks.enchantCostReduction(25));
+	}
+
+	@Test
+	void arcaneDiscountUsesRoundedCostAndNeverMakesAnEnchantmentFree() {
+		assertEquals(3, Perks.discountedEnchantmentLevels(0, 3));
+		assertEquals(2, Perks.discountedEnchantmentLevels(25, 3));
+		assertEquals(1, Perks.discountedEnchantmentLevels(100, 1));
+	}
 }

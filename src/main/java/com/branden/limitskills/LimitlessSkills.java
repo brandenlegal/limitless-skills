@@ -6,8 +6,10 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +46,8 @@ public class LimitlessSkills implements ModInitializer {
 
 		// Block break XP
 		PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
-			if (player instanceof ServerPlayer sp) {
-				XpHooks.onBlockBreak(sp, state, pos);
+			if (player instanceof ServerPlayer sp && world instanceof ServerLevel level) {
+				XpHooks.onBlockBreak(sp, level, state, pos, blockEntity);
 			}
 		});
 
@@ -53,6 +55,13 @@ public class LimitlessSkills implements ModInitializer {
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
 			SkillNetworking.syncToClient(handler.getPlayer())
 		);
+		UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
+			if (player instanceof ServerPlayer serverPlayer && world instanceof ServerLevel serverLevel
+				&& world.getBlockState(hit.getBlockPos()).is(net.minecraft.world.level.block.Blocks.BREWING_STAND)) {
+				BrewingXpOwners.markUsed(serverPlayer, serverLevel, hit.getBlockPos());
+			}
+			return net.minecraft.world.InteractionResult.PASS;
+		});
 
 		// Award XP only after the server confirms a kill or nonfatal damage.
 		ServerLivingEntityEvents.AFTER_DEATH.register((victim, source) -> {
@@ -70,11 +79,13 @@ public class LimitlessSkills implements ModInitializer {
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			ServerPlayer player = handler.getPlayer();
 			AntiCheese.cleanup(player.getUUID());
+			BrewingXpOwners.clear(player.getUUID());
 		});
 
 		// Server stop - save all data
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			LOGGER.info("Saving skill data...");
+			BrewingXpOwners.clearAll();
 		});
 
 		LOGGER.info("Limitless Skills initialized!");

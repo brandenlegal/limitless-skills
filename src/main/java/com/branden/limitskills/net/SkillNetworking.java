@@ -1,6 +1,7 @@
 package com.branden.limitskills.net;
 
 import com.branden.limitskills.SkillManager;
+import com.branden.limitskills.Perks;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,6 +17,7 @@ public final class SkillNetworking {
 
 	public static void syncToClient(ServerPlayer player) {
 		var data = SkillManager.get(player);
+		Perks.syncPlayer(player, data);
 		var payload = new SkillSyncPayload(data.getAllXp(), data.getAllLevels());
 		ServerPlayNetworking.send(player, payload);
 	}
