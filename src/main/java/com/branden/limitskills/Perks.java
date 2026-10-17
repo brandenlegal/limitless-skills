@@ -2,14 +2,19 @@ package com.branden.limitskills;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.util.RandomSource;
 
 /**
  * Perk effects applied on level-up and queried for active bonuses.
  * Designed for synergy with Limitless Enchants via SkillApi.
  */
 public final class Perks {
+	private static final Identifier HEALTH_MODIFIER_ID = Identifier.fromNamespaceAndPath(LimitlessSkills.MOD_ID, "survival_health");
 	/** Mining: +2% mining speed per level (applied via attribute modifier). */
 	public static double miningSpeedBonus(int level) {
 		return level * 0.02;
@@ -55,6 +60,30 @@ public final class Perks {
 		return level * 0.02;
 	}
 
+	public static boolean rollBonusDrop(int level, RandomSource random) {
+		return random.nextDouble() < doubleDropChance(level);
+	}
+
+	public static boolean rollCriticalHit(int level, RandomSource random) {
+		return random.nextDouble() < critChanceBonus(level);
+	}
+
+	public static int discountedEnchantmentLevels(int level, int levels) {
+		if (levels <= 0) return levels;
+		return Math.max(1, (int) Math.round(levels * (1.0 - enchantCostReduction(level))));
+	}
+
+	/** Keep the Survival health bonus derived from the persisted skill level. */
+	public static void syncPlayer(ServerPlayer player, SkillData data) {
+		AttributeInstance health = player.getAttribute(Attributes.MAX_HEALTH);
+		if (health == null) return;
+		health.removeModifier(HEALTH_MODIFIER_ID);
+		int bonus = bonusHealth(data.getLevel(SkillType.SURVIVAL));
+		if (bonus > 0) {
+			health.addPermanentModifier(new AttributeModifier(HEALTH_MODIFIER_ID, bonus, AttributeModifier.Operation.ADD_VALUE));
+		}
+	}
+
 	public static void onLevelUp(ServerPlayer player, SkillType type, int newLevel) {
 		player.sendSystemMessage(Component.literal("§6§l" + type.displayName + " §elevel up! §7Now level §a" + newLevel));
 		player.playSound(SoundEvents.PLAYER_LEVELUP, 0.5f, 1.0f);
@@ -62,7 +91,6 @@ public final class Perks {
 		// Milestone rewards every 10 levels
 		if (newLevel % 10 == 0) {
 			player.sendSystemMessage(Component.literal("§d§lMilestone! §7" + type.displayName + " reached level " + newLevel));
-			// Grant a reward - could integrate with Limitless Enchants here
 		}
 	}
 }
