@@ -70,7 +70,6 @@ public class LimitlessSkills implements ModInitializer {
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			ServerPlayer player = handler.getPlayer();
 			AntiCheese.cleanup(player.getUUID());
-			SkillStore.onPlayerDisconnect(player.getUUID());
 		});
 
 		// Server stop - save all data

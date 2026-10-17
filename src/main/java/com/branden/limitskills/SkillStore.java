@@ -51,8 +51,7 @@ public final class SkillStore {
 	}
 
 	public static void onPlayerDisconnect(UUID uuid) {
-		// Vanilla saves the player before the disconnect event. Do not let this
-		// session's data leak into a later login or another world.
+		// Called after PlayerList.remove saves the player's final NBT.
 		clear(uuid);
 	}
 
