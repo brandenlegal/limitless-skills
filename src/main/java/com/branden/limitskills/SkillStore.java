@@ -51,8 +51,8 @@ public final class SkillStore {
 	}
 
 	public static void onPlayerDisconnect(UUID uuid) {
-		// Data is kept in cache; in production this would write to disk
-		// For now, keep in memory (survives until server stop)
+		// Called after PlayerList.remove saves the player's final NBT.
+		clear(uuid);
 	}
 
 	public static void clear(UUID uuid) {

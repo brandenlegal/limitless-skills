@@ -6,22 +6,22 @@ Part of the [Limitless Labs](https://github.com/brandenlegal) ecosystem.
 
 ## Current Version
 
-Latest previously shipped build: **v2.0.1**. Current development build: **2.0.2-dev.1** on `codex/phase-0-build` (not a release).
+Latest previously shipped build: **v2.0.1**. Current development build: **2.0.3-phase1.0** on `codex/phase-1-stability` (not a release).
 
 ## Features
 
 ### Five Skill Disciplines
-Mining, Combat, Farming, Survival, and Arcane are defined and displayed. The current event wiring awards Mining XP for blocks, Farming XP for mature crops, and Survival XP for logs. The other XP source methods are not yet connected to game events.
+Server events award Mining XP for eligible blocks, Farming XP for mature crops and breeding, Survival XP for logs, fishing, and damage, Combat XP for kills, and Arcane XP for enchanting and brewing. Runtime verification varies by system; see [Phase 1 verification](docs/PHASE1_RUNTIME_VERIFICATION.md).
 
 ### Progression
 - Exponential XP curve (`100 × 1.35^level`)
 - Level-up notifications with sound
-- Per-discipline perk formulas are displayed in the UI; gameplay effects are not yet connected.
-- Block-break XP is rate limited. Placed-block tracking is not yet connected to a placement event.
+- Documented passive perk effects are wired to server-side gameplay hooks; formula unit tests pass, while individual in-world effects still need manual verification.
+- Block-break XP is rate limited. Successful player block placements are tracked for the anti-farming guard.
 
 ### Persistence
 - Skill data saves to player NBT via Mixin
-- Player NBT save/load Mixin is present; persistence across a full restart still needs an in-game test.
+- Player NBT save/load is verified across a full game process restart in the Phase 1 test world.
 - Server-authoritative with client sync
 
 ### Interface (v2.0)
@@ -101,6 +101,7 @@ Use the checked-in Gradle wrapper and Java 25. See [docs/BUILD.md](docs/BUILD.md
 - `main` — Stable releases
 - `v2.0-redesign` — v2.0 UI + persistence + commands (source baseline)
 - `codex/phase-0-build` — reproducible Loom build work
+- `codex/phase-1-stability` — runtime verification and core stability
 - `v1.1.0-persistence-ui` — Persistence milestone
 - `loom-pipeline-experiment` — Fabric Loom build scaffold
 

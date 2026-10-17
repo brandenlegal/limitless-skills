@@ -2,6 +2,8 @@ package com.branden.limitskills;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
@@ -32,7 +34,7 @@ public final class XpHooks {
 	private static final double ENCHANT_XP = 30.0;
 	private static final double BREW_XP = 15.0;
 
-	public static void onBlockBreak(ServerPlayer player, BlockState state, BlockPos pos) {
+	public static void onBlockBreak(ServerPlayer player, ServerLevel level, BlockState state, BlockPos pos, BlockEntity blockEntity) {
 		if (!AntiCheese.allowBlockXp(player, pos)) return;
 
 		Block block = state.getBlock();
@@ -50,6 +52,21 @@ public final class XpHooks {
 		} else if (blockId.contains("log") || blockId.contains("stem")) {
 			// Woodcutting -> Survival
 			SkillManager.awardXp(player, SkillType.SURVIVAL, 5.0);
+		}
+
+		int bonusCrops = block instanceof CropBlock crop && crop.isMaxAge(state)
+			? Perks.bonusCropYield(SkillManager.get(player).getLevel(SkillType.FARMING)) : 0;
+		boolean miningBonus = (blockId.contains("_ore") || blockId.equals("minecraft:ancient_debris")
+			|| blockId.contains("stone") || blockId.contains("andesite") || blockId.contains("diorite")
+			|| blockId.contains("granite") || blockId.contains("deepslate") || blockId.contains("tuff"))
+			&& Perks.rollBonusDrop(SkillManager.get(player).getLevel(SkillType.MINING), level.getRandom());
+		int repeats = bonusCrops + (miningBonus ? 1 : 0);
+		if (repeats > 0 && !player.isCreative()) {
+			for (int i = 0; i < repeats; i++) {
+				for (var drop : Block.getDrops(state, level, pos, blockEntity, player, player.getMainHandItem())) {
+					Block.popResource(level, pos, drop);
+				}
+			}
 		}
 	}
 
